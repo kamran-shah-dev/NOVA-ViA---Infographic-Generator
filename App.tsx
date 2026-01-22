@@ -134,17 +134,16 @@ const App: React.FC = () => {
       <nav className="h-20 border-b border-[#2E3B4A]/10 bg-white flex items-center justify-between px-6 md:px-10 sticky top-0 z-50">
         <div className="flex items-center gap-3 md:gap-4">
           <div 
-            className="w-10 h-10 md:w-12 md:h-12 flex items-center justify-center shadow-sm"
-            style={{ backgroundColor: NOVA_VIA_BRAND.primary }}
+            className="w-12 h-12 md:w-20 md:h-20 flex items-center justify-center shadow-sm"
           >
-            <Sparkles className="text-white" size={24} />
+            <img src="/novavia-logo.png" alt="NOVA ViA Logo" />
           </div>
           <div>
-            <h1 className="text-xl md:text-2xl font-black tracking-tighter font-heading" style={{ color: NOVA_VIA_BRAND.primary }}>Nova ViA</h1>
+            <h1 className="text-xl md:text-2xl font-black tracking-tighter font-heading" style={{ color: NOVA_VIA_BRAND.primary }}>NOVA ViA</h1>
             <p className="hidden md:block text-[9px] uppercase tracking-[0.4em] text-[#818181] font-black -mt-1 font-body">Design Intelligence</p>
           </div>
         </div>
-        <div className="flex items-center gap-4 md:gap-6">
+        {/* <div className="flex items-center gap-4 md:gap-6">
           <a 
             href="https://ai.google.dev/gemini-api/docs/billing" 
             target="_blank" 
@@ -152,7 +151,7 @@ const App: React.FC = () => {
           >
             <Info size={14} /> <span className="hidden sm:inline">Engine: Gemini 3 Pro</span>
           </a>
-        </div>
+        </div> */}
       </nav>
 
       {/* Hero Input Section */}
@@ -208,7 +207,7 @@ const App: React.FC = () => {
         <aside className="w-full lg:w-[380px] shrink-0 flex flex-col gap-10">
           {/* Structure Section with Increased Font Sizes */}
           <section className="flex flex-col gap-6">
-            <h3 className="font-bold text-[#1A2633] flex items-center gap-3 text-base md:text-lg uppercase tracking-widest font-heading border-b border-[#2E3B4A]/10 pb-4">
+            <h3 className="font-bold text-[#1A2633] flex items-center gap-3 text-[25px] md:text-lg uppercase tracking-widest font-heading border-b border-[#2E3B4A]/10 pb-4">
               <Layout size={20} style={{ color: NOVA_VIA_BRAND.primary }} />
               Geometry & Flow
             </h3>
@@ -236,7 +235,7 @@ const App: React.FC = () => {
 
           {/* Aesthetic Values Section with Increased Font Sizes */}
           <section className="flex flex-col gap-8">
-            <h3 className="font-bold text-[#1A2633] flex items-center gap-3 text-base md:text-lg uppercase tracking-widest font-heading border-b border-[#2E3B4A]/10 pb-4">
+            <h3 className="font-bold text-[#1A2633] flex items-center gap-3 text-[25px] md:text-lg uppercase tracking-widest font-heading border-b border-[#2E3B4A]/10 pb-4">
               <Palette size={20} style={{ color: NOVA_VIA_BRAND.accent }} />
               Aesthetic Values
             </h3>
@@ -297,7 +296,7 @@ const App: React.FC = () => {
         {/* Live Canvas Area */}
         <div className="flex-1 flex flex-col min-w-0">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8 gap-4 sm:gap-0">
-            <h3 className="font-bold text-[#1A2633] flex items-center gap-3 uppercase tracking-[0.4em] text-[10px] font-heading">
+            <h3 className="font-bold text-[#1A2633] flex items-center gap-3 uppercase tracking-[0.4em] text-[19px] font-heading">
               <div className="w-1.5 h-1.5 rounded-full bg-[#8F9185] animate-pulse" />
               Manifestation Workspace
             </h3>
@@ -306,26 +305,26 @@ const App: React.FC = () => {
                 <div className="flex bg-white shadow-sm border border-[#2E3B4A]/10 p-1">
                   <button 
                     onClick={() => exportAsImage('png')}
-                    className="px-4 py-2 hover:bg-[#EEEDE9] text-[10px] font-bold text-[#1A2633] transition-all uppercase tracking-widest font-heading flex items-center gap-2"
+                    className="px-4 py-2 hover:bg-[#EEEDE9] text-[15px] font-bold text-[#1A2633] transition-all uppercase tracking-widest font-heading flex items-center gap-2"
                   >
                     <Download size={14} /> PNG
                   </button>
                   <button 
                     onClick={() => exportAsImage('jpeg')}
-                    className="px-4 py-2 hover:bg-[#EEEDE9] text-[10px] font-bold text-[#1A2633] transition-all uppercase tracking-widest font-heading"
+                    className="px-4 py-2 hover:bg-[#EEEDE9] text-[15px] font-bold text-[#1A2633] transition-all uppercase tracking-widest font-heading"
                   >
                     JPG
                   </button>
                   <button 
                     onClick={() => exportAsImage('svg')}
-                    className="px-4 py-2 hover:bg-[#EEEDE9] text-[10px] font-bold text-[#1A2633] transition-all uppercase tracking-widest font-heading"
+                    className="px-4 py-2 hover:bg-[#EEEDE9] text-[15px] font-bold text-[#1A2633] transition-all uppercase tracking-widest font-heading"
                   >
                     SVG
                   </button>
                 </div>
                 <button 
                   onClick={handleCopySvg}
-                  className="px-6 py-3 bg-[#1A2633] text-[10px] font-bold text-white hover:bg-[#034F80] transition-all shadow-xl uppercase tracking-widest font-heading"
+                  className="px-6 py-3 bg-[#1A2633] text-[15px] font-bold text-white hover:bg-[#034F80] transition-all shadow-xl uppercase tracking-widest font-heading"
                 >
                   <Copy size={16} className="inline mr-2" /> {showCopySuccess ? 'COPIED!' : 'COPY SVG'}
                 </button>
@@ -379,13 +378,13 @@ const App: React.FC = () => {
 
       <footer className="py-10 border-t border-[#2E3B4A]/5 bg-white flex flex-col items-center justify-center text-[#818181] shrink-0 px-4 text-center gap-4">
         <div className="flex items-center gap-2">
-          <div className="w-6 h-6 bg-[#034F80] flex items-center justify-center">
-            <Sparkles className="text-white" size={12} />
+          <div className="w-12 h-12 md:w-20 md:h-20 flex items-center justify-center">
+            <img src="/novavia-logo.png" alt="NOVA ViA Logo" />
           </div>
-          <span className="text-[10px] font-black uppercase tracking-[0.5em] font-heading text-[#1A2633]">Nova ViA</span>
+          <span className="text-[20px] font-black uppercase tracking-[0.5em] font-heading text-[#1A2633]">Nova ViA</span>
         </div>
-        <p className="text-[9px] uppercase tracking-[0.3em] font-bold opacity-50 font-body">
-          &copy; 2025 Nova ViA Digital &bull; Human-Centred Presence &bull; Clarity &bull; Integrity
+        <p className="text-[13px] uppercase tracking-[0.3em] font-bold opacity-100 font-body">
+          &copy; 2026 Nova ViA Infographic Generator - All Rights Reserved
         </p>
       </footer>
     </div>
