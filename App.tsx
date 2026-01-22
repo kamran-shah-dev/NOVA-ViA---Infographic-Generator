@@ -87,34 +87,64 @@ const App: React.FC = () => {
     }
   }, []);
 
-  const exportAsImage = async (format: 'png' | 'jpeg' | 'svg') => {
-    if (!exportRef.current) return;
+const exportAsImage = async (format: 'png' | 'jpeg' | 'svg') => {
+    if (!exportRef.current) {
+      setError('No infographic to export. Please generate one first.');
+      return;
+    }
 
     try {
       const node = exportRef.current;
+      
+      // Get the full dimensions including scrolled content
+      const fullWidth = node.scrollWidth;
+      const fullHeight = node.scrollHeight;
+      
+      // Enhanced options for better quality export with full dimensions
       const options = {
         backgroundColor: styleOptions.backgroundColor,
-        pixelRatio: 3, 
+        pixelRatio: 2, // Balanced quality/performance
+        cacheBust: true,
         style: {
           borderRadius: '0px',
+          transform: 'scale(1)',
+          overflow: 'visible',
         },
+        // Use scroll dimensions to capture full content
+        width: fullWidth,
+        height: fullHeight,
       };
 
       let dataUrl = '';
+      
       if (format === 'png') {
         dataUrl = await htmlToImage.toPng(node, options);
       } else if (format === 'jpeg') {
-        dataUrl = await htmlToImage.toJpeg(node, { ...options, quality: 0.98 });
+        dataUrl = await htmlToImage.toJpeg(node, { 
+          ...options, 
+          quality: 0.98,
+          backgroundColor: styleOptions.backgroundColor
+        });
       } else if (format === 'svg') {
         dataUrl = await htmlToImage.toSvg(node, options);
       }
 
+      if (!dataUrl) {
+        throw new Error('Failed to generate image data');
+      }
+
+      // Create and trigger download
       const link = document.createElement('a');
       link.download = `NovaViA-Infographic-${Date.now()}.${format === 'jpeg' ? 'jpg' : format}`;
       link.href = dataUrl;
+      document.body.appendChild(link);
       link.click();
+      document.body.removeChild(link);
+      
+      setError(null);
     } catch (err) {
-      setError('High-resolution capture failed. Try with less complex content.');
+      console.error('Export error:', err);
+      setError(`Export to ${format.toUpperCase()} failed. Please try again or use a different format.`);
     }
   };
 
@@ -202,7 +232,7 @@ const App: React.FC = () => {
       </section>
 
       {/* Main Workspace */}
-      <div className="flex-1 flex flex-col lg:flex-row max-w-[1600px] mx-auto w-full p-4 md:p-12 gap-8 md:gap-16">
+      <div className="flex-1 flex flex-col lg:flex-row w-full mx-auto w-full p-4 md:p-12 gap-8 md:gap-16 bg-gray-300">
         {/* Sidebar Configuration */}
         <aside className="w-full lg:w-[380px] shrink-0 flex flex-col gap-10">
           {/* Structure Section with Increased Font Sizes */}
@@ -298,7 +328,7 @@ const App: React.FC = () => {
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8 gap-4 sm:gap-0">
             <h3 className="font-bold text-[#1A2633] flex items-center gap-3 uppercase tracking-[0.4em] text-[19px] font-heading">
               <div className="w-1.5 h-1.5 rounded-full bg-[#8F9185] animate-pulse" />
-              Manifestation Workspace
+                
             </h3>
             {data && (
               <div className="flex flex-wrap items-center gap-3 w-full sm:w-auto">
@@ -322,12 +352,12 @@ const App: React.FC = () => {
                     SVG
                   </button>
                 </div>
-                <button 
+                {/* <button 
                   onClick={handleCopySvg}
                   className="px-6 py-3 bg-[#1A2633] text-[15px] font-bold text-white hover:bg-[#034F80] transition-all shadow-xl uppercase tracking-widest font-heading"
                 >
                   <Copy size={16} className="inline mr-2" /> {showCopySuccess ? 'COPIED!' : 'COPY SVG'}
-                </button>
+                </button> */}
               </div>
             )}
           </div>
