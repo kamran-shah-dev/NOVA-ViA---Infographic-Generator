@@ -16,6 +16,10 @@ const InfographicRenderer: React.FC<Props> = ({ data, layout, styles }) => {
   const { title, subtitle, steps } = data;
   const accent = styles.accentColor;
   const bg = styles.backgroundColor;
+  const DARK_BACKGROUNDS = ['#1a2633', '#818181'];
+  const isDarkBackground = DARK_BACKGROUNDS.includes(bg.toLowerCase());
+  const titleColor = isDarkBackground ? '#ffffff' : NOVA_VIA_BRAND.text;
+
   
   const getRadius = () => {
     return CORNER_STYLES.find(s => s.id === styles.cornerStyle)?.radius || '0px';
@@ -39,7 +43,7 @@ const InfographicRenderer: React.FC<Props> = ({ data, layout, styles }) => {
     return (
       <div className="flex flex-col gap-10 w-full max-w-4xl mx-auto p-10 md:p-20 shadow-2xl" style={{ borderRadius: getRadius(), backgroundColor: bg }}>
         <header className="mb-12 text-center">
-          <h2 className="text-3xl md:text-5xl font-normal font-elegant" style={{ color: NOVA_VIA_BRAND.text }}>{title}</h2>
+          <h2 className="text-3xl md:text-5xl font-normal font-elegant" style={{ color: titleColor }}>{title}</h2>
           {subtitle && <p className="text-[#818181] mt-4 text-base md:text-xl font-body italic">{subtitle}</p>}
           <div className="h-1 w-24 bg-[#034F80] mx-auto mt-8 opacity-20" />
         </header>
@@ -80,7 +84,7 @@ const InfographicRenderer: React.FC<Props> = ({ data, layout, styles }) => {
     return (
       <div className="p-10 md:p-24 shadow-2xl inline-block min-w-full lg:min-w-0" style={{ borderRadius: getRadius(), backgroundColor: bg }}>
         <header className="mb-20 text-center">
-          <h2 className="text-4xl md:text-6xl font-normal font-elegant" style={{ color: NOVA_VIA_BRAND.text }}>{title}</h2>
+          <h2 className="text-4xl md:text-6xl font-normal font-elegant" style={{ color: titleColor }}>{title}</h2>
           {subtitle && <p className="text-[#818181] mt-6 text-xl font-body italic">{subtitle}</p>}
         </header>
         <div className="flex flex-col md:flex-row gap-10 items-stretch">
@@ -124,7 +128,7 @@ const InfographicRenderer: React.FC<Props> = ({ data, layout, styles }) => {
     return (
       <div className="flex flex-col items-center justify-center p-12 md:p-24 shadow-2xl border border-white inline-block" style={{ borderRadius: getRadius(), backgroundColor: bg }}>
         <header className="mb-10 text-center max-w-3xl">
-          <h2 className="text-3xl md:text-5xl font-normal font-elegant" style={{ color: NOVA_VIA_BRAND.text }}>{title}</h2>
+          <h2 className="text-3xl md:text-5xl font-normal font-elegant" style={{ color: titleColor }}>{title}</h2>
           {subtitle && <p className="text-[#818181] mt-4 text-lg md:text-xl font-body italic">{subtitle}</p>}
         </header>
         <div className="relative" style={{ width: svgSize, height: svgSize }}>
@@ -188,7 +192,7 @@ const InfographicRenderer: React.FC<Props> = ({ data, layout, styles }) => {
     return (
       <div className="w-full max-w-5xl p-10 md:p-24 border border-white shadow-2xl mx-auto" style={{ borderRadius: getRadius(), backgroundColor: bg }}>
         <header className="mb-20 text-center">
-          <h2 className="text-4xl md:text-6xl font-normal font-elegant" style={{ color: NOVA_VIA_BRAND.text }}>{title}</h2>
+          <h2 className="text-4xl md:text-6xl font-normal font-elegant" style={{ color: titleColor }}>{title}</h2>
           {subtitle && <p className="text-[#818181] mt-6 text-xl font-body italic">{subtitle}</p>}
         </header>
         <div className="relative max-w-4xl mx-auto">
@@ -240,7 +244,7 @@ const InfographicRenderer: React.FC<Props> = ({ data, layout, styles }) => {
     return (
       <div className="flex flex-col items-center justify-center p-12 md:p-24 shadow-2xl border border-white inline-block" style={{ borderRadius: getRadius(), backgroundColor: bg }}>
         <header className="mb-16 text-center max-w-4xl">
-          <h2 className="text-4xl md:text-6xl font-normal font-elegant tracking-tight" style={{ color: NOVA_VIA_BRAND.text }}>{title}</h2>
+          <h2 className="text-4xl md:text-6xl font-normal font-elegant tracking-tight" style={{ color: titleColor }}>{title}</h2>
           {subtitle && <p className="text-[#818181] mt-6 text-xl font-body italic font-medium">{subtitle}</p>}
         </header>
         
@@ -305,7 +309,7 @@ const InfographicRenderer: React.FC<Props> = ({ data, layout, styles }) => {
     return (
       <div className="w-full max-w-7xl p-10 md:p-24 border border-white shadow-2xl mx-auto" style={{ borderRadius: getRadius(), backgroundColor: bg }}>
         <header className="mb-20 text-center">
-          <h2 className="text-4xl md:text-6xl font-normal font-elegant" style={{ color: NOVA_VIA_BRAND.text }}>{title}</h2>
+          <h2 className="text-4xl md:text-6xl font-normal font-elegant" style={{ color: titleColor }}>{title}</h2>
           {subtitle && <p className="text-[#818181] mt-6 text-xl font-body italic">{subtitle}</p>}
         </header>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10 md:gap-16">
