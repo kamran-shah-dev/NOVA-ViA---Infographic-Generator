@@ -38,10 +38,8 @@ export const BORDER_VARIANTS = [
 ];
 
 export const LAYOUT_OPTIONS = [
-  { id: 'vertical-cards', label: 'Transformative Flow', description: 'Deep narrative evolution' },
-  { id: 'horizontal-steps', label: 'Clarity Roadmap', description: 'Linear structural progression' },
-  { id: 'radial-process', label: 'Central Integrity', description: 'Unified core mission' },
-  { id: 'timeline-flow', label: 'Legacy Path', description: 'Empowered historical journey' },
-  { id: 'circular-progress', label: 'Eternal Orbit', description: 'Sustainable human-centered loop' },
-  { id: 'multi-column', label: 'Information Matrix', description: 'Complex data empowered' },
+  { id: 'vertical-cards', label: 'Vertical Step by Step', description: 'Deep narrative evolution' },
+  { id: 'horizontal-steps', label: 'Horizontal Flow', description: 'Linear structural progression' },
+  { id: 'timeline-flow', label: 'Vertical Flow', description: 'Empowered historical journey' },
+  { id: 'multi-column', label: 'Columns', description: 'Complex data empowered' },
 ] as const;
