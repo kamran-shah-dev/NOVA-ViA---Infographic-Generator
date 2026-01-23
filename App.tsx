@@ -1,5 +1,4 @@
-
-import React, { useState, useCallback, useRef } from 'react';
+import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import * as htmlToImage from 'html-to-image';
 import { 
@@ -14,12 +13,31 @@ import {
   Trash2,
   Download,
   AlertCircle,
-  X
+  X,
+  Edit3,
+  Image,
+  Share2
 } from 'lucide-react';
 import { InfographicData, LayoutType, StyleOptions } from './types';
 import { LAYOUT_OPTIONS, NOVA_VIA_BRAND, ACCENT_COLORS, BACKGROUND_COLORS, CORNER_STYLES, BORDER_VARIANTS } from './constants';
 import { parseInfographicText, InfographicError } from './services/geminiService';
 import InfographicRenderer from './components/InfographicRenderer';
+
+// Step Navigation Types
+type StepId = 'input' | 'infographic' | 'export';
+
+interface Step {
+  id: StepId;
+  label: string;
+  icon: React.ReactNode;
+  number: number;
+}
+
+const STEPS: Step[] = [
+  { id: 'input', label: 'Input', icon: <Edit3 size={16} />, number: 1 },
+  { id: 'infographic', label: 'Infographic', icon: <Image size={16} />, number: 2 },
+  { id: 'export', label: 'Export', icon: <Share2 size={16} />, number: 3 },
+];
 
 const ErrorToast: React.FC<{ message: string; onDismiss: () => void }> = ({ message, onDismiss }) => (
   <motion.div 
@@ -39,6 +57,94 @@ const ErrorToast: React.FC<{ message: string; onDismiss: () => void }> = ({ mess
   </motion.div>
 );
 
+// Sticky Step Navigation Component
+const StepNavigation: React.FC<{
+  activeStep: StepId;
+  onStepClick: (stepId: StepId) => void;
+  hasData: boolean;
+  isProcessing: boolean;
+}> = ({ activeStep, onStepClick, hasData, isProcessing }) => {
+  const getStepStatus = (step: Step): 'completed' | 'active' | 'upcoming' => {
+    const stepOrder = { input: 1, infographic: 2, export: 3 };
+    const activeOrder = stepOrder[activeStep];
+    const currentOrder = stepOrder[step.id];
+    
+    if (currentOrder < activeOrder) return 'completed';
+    if (currentOrder === activeOrder) return 'active';
+    return 'upcoming';
+  };
+
+  const isStepClickable = (stepId: StepId): boolean => {
+    if (stepId === 'input') return true;
+    if (stepId === 'infographic') return isProcessing || hasData;
+    if (stepId === 'export') return hasData;
+    return false;
+  };
+
+  return (
+    <div className="sticky top-20 z-40 bg-white/95 backdrop-blur-md border-b border-[#2E3B4A]/10 shadow-sm">
+      <div className="max-w-4xl mx-auto px-4 md:px-6">
+        <div className="flex items-center justify-center gap-2 md:gap-4 py-3 md:py-4">
+          {STEPS.map((step, index) => {
+            const status = getStepStatus(step);
+            const clickable = isStepClickable(step.id);
+            
+            return (
+              <React.Fragment key={step.id}>
+                <button
+                  onClick={() => clickable && onStepClick(step.id)}
+                  disabled={!clickable}
+                  className={`
+                    flex items-center gap-2 md:gap-3 px-3 md:px-5 py-2 md:py-2.5 rounded-full transition-all duration-300
+                    ${status === 'active' 
+                      ? 'bg-[#034F80] text-white shadow-lg scale-105' 
+                      : status === 'completed'
+                        ? 'bg-[#8F9185]/20 text-[#034F80] hover:bg-[#8F9185]/30'
+                        : 'bg-[#EEEDE9] text-[#818181]'
+                    }
+                    ${clickable ? 'cursor-pointer hover:shadow-md' : 'cursor-not-allowed opacity-50'}
+                  `}
+                >
+                  <span className={`
+                    w-6 h-6 md:w-7 md:h-7 rounded-full flex items-center justify-center text-xs font-bold
+                    ${status === 'active' 
+                      ? 'bg-white/20' 
+                      : status === 'completed'
+                        ? 'bg-[#034F80] text-white'
+                        : 'bg-[#818181]/20'
+                    }
+                  `}>
+                    {status === 'completed' ? '✓' : step.number}
+                  </span>
+                  <span className="hidden sm:flex items-center gap-2">
+                    {step.icon}
+                    <span className="text-xs md:text-sm font-bold uppercase tracking-wider">
+                      {step.label}
+                    </span>
+                  </span>
+                  <span className="sm:hidden text-xs font-bold uppercase">
+                    {step.label}
+                  </span>
+                </button>
+                
+                {index < STEPS.length - 1 && (
+                  <div className={`
+                    w-8 md:w-12 h-0.5 rounded-full transition-colors duration-300
+                    ${status === 'completed' || (status === 'active' && index === 0) 
+                      ? 'bg-[#034F80]' 
+                      : 'bg-[#EEEDE9]'
+                    }
+                  `} />
+                )}
+              </React.Fragment>
+            );
+          })}
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const App: React.FC = () => {
   const [inputText, setInputText] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
@@ -46,14 +152,89 @@ const App: React.FC = () => {
   const [data, setData] = useState<InfographicData | null>(null);
   const [selectedLayout, setSelectedLayout] = useState<LayoutType>('vertical-cards');
   const [showCopySuccess, setShowCopySuccess] = useState(false);
+  const [activeStep, setActiveStep] = useState<StepId>('input');
+  
+  // Section refs for scrolling
+  const inputSectionRef = useRef<HTMLElement>(null);
+  const infographicSectionRef = useRef<HTMLDivElement>(null);
   const exportRef = useRef<HTMLDivElement>(null);
   
   const [styleOptions, setStyleOptions] = useState<StyleOptions>({
     accentColor: NOVA_VIA_BRAND.accent,
-    backgroundColor: BACKGROUND_COLORS[1].value, // Soft Off-White
+    backgroundColor: BACKGROUND_COLORS[1].value,
     cornerStyle: 'soft',
     borderVariant: 'solid',
   });
+
+  // Scroll to section helper
+  const scrollToSection = useCallback((stepId: StepId) => {
+    const offsets = { input: 100, infographic: 140, export: 140 };
+    let targetRef: React.RefObject<HTMLElement | HTMLDivElement | null>;
+    
+    switch (stepId) {
+      case 'input':
+        targetRef = inputSectionRef;
+        break;
+      case 'infographic':
+      case 'export':
+        targetRef = infographicSectionRef;
+        break;
+    }
+    
+    if (targetRef?.current) {
+      const yOffset = -offsets[stepId];
+      const y = targetRef.current.getBoundingClientRect().top + window.pageYOffset + yOffset;
+      window.scrollTo({ top: y, behavior: 'smooth' });
+    }
+  }, []);
+
+  // Handle step click
+  const handleStepClick = useCallback((stepId: StepId) => {
+    setActiveStep(stepId);
+    scrollToSection(stepId);
+  }, [scrollToSection]);
+
+  // Update active step based on scroll position
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollY = window.scrollY;
+      const inputTop = inputSectionRef.current?.offsetTop ?? 0;
+      const infographicTop = infographicSectionRef.current?.offsetTop ?? 0;
+      
+      const offset = 200;
+      
+      if (scrollY < infographicTop - offset) {
+        if (activeStep !== 'input' && !isProcessing) {
+          setActiveStep('input');
+        }
+      } else if (data) {
+        // If we have data and scrolled to infographic section
+        if (activeStep !== 'export' && activeStep !== 'infographic') {
+          setActiveStep('export');
+        }
+      } else if (isProcessing) {
+        setActiveStep('infographic');
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [activeStep, data, isProcessing]);
+
+  // Auto-advance to infographic step when generating
+  useEffect(() => {
+    if (isProcessing) {
+      setActiveStep('infographic');
+      setTimeout(() => scrollToSection('infographic'), 100);
+    }
+  }, [isProcessing, scrollToSection]);
+
+  // Auto-advance to export step when data is ready
+  useEffect(() => {
+    if (data && !isProcessing) {
+      setActiveStep('export');
+    }
+  }, [data, isProcessing]);
 
   const handleGenerate = async () => {
     if (!inputText.trim()) {
@@ -87,7 +268,7 @@ const App: React.FC = () => {
     }
   }, []);
 
-const exportAsImage = async (format: 'png' | 'jpeg' | 'svg') => {
+  const exportAsImage = async (format: 'png' | 'jpeg' | 'svg') => {
     if (!exportRef.current) {
       setError('No infographic to export. Please generate one first.');
       return;
@@ -95,22 +276,18 @@ const exportAsImage = async (format: 'png' | 'jpeg' | 'svg') => {
 
     try {
       const node = exportRef.current;
-      
-      // Get the full dimensions including scrolled content
       const fullWidth = node.scrollWidth;
       const fullHeight = node.scrollHeight;
       
-      // Enhanced options for better quality export with full dimensions
       const options = {
         backgroundColor: styleOptions.backgroundColor,
-        pixelRatio: 2, // Balanced quality/performance
+        pixelRatio: 2,
         cacheBust: true,
         style: {
           borderRadius: '0px',
           transform: 'scale(1)',
           overflow: 'visible',
         },
-        // Use scroll dimensions to capture full content
         width: fullWidth,
         height: fullHeight,
       };
@@ -133,7 +310,6 @@ const exportAsImage = async (format: 'png' | 'jpeg' | 'svg') => {
         throw new Error('Failed to generate image data');
       }
 
-      // Create and trigger download
       const link = document.createElement('a');
       link.download = `NovaViA-Infographic-${Date.now()}.${format === 'jpeg' ? 'jpg' : format}`;
       link.href = dataUrl;
@@ -152,6 +328,8 @@ const exportAsImage = async (format: 'png' | 'jpeg' | 'svg') => {
     setData(null);
     setInputText('');
     setError(null);
+    setActiveStep('input');
+    scrollToSection('input');
   };
 
   return (
@@ -163,9 +341,7 @@ const exportAsImage = async (format: 'png' | 'jpeg' | 'svg') => {
       {/* Navbar */}
       <nav className="h-20 border-b border-[#2E3B4A]/10 bg-white flex items-center justify-between px-6 md:px-10 sticky top-0 z-50">
         <div className="flex items-center gap-3 md:gap-4">
-          <div 
-            className="w-12 h-12 md:w-20 md:h-20 flex items-center justify-center shadow-sm"
-          >
+          <div className="w-12 h-12 md:w-20 md:h-20 flex items-center justify-center shadow-sm">
             <img src="/novavia-logo.png" alt="NOVA ViA Logo" />
           </div>
           <div>
@@ -173,19 +349,22 @@ const exportAsImage = async (format: 'png' | 'jpeg' | 'svg') => {
             <p className="hidden md:block text-[9px] uppercase tracking-[0.4em] text-[#818181] font-black -mt-1 font-body">Design Intelligence</p>
           </div>
         </div>
-        {/* <div className="flex items-center gap-4 md:gap-6">
-          <a 
-            href="https://ai.google.dev/gemini-api/docs/billing" 
-            target="_blank" 
-            className="text-[10px] md:text-xs font-bold text-[#818181] hover:text-[#034F80] transition-colors flex items-center gap-2 uppercase tracking-widest font-heading"
-          >
-            <Info size={14} /> <span className="hidden sm:inline">Engine: Gemini 3 Pro</span>
-          </a>
-        </div> */}
       </nav>
 
-      {/* Hero Input Section */}
-      <section className="bg-[#1A2633] py-12 md:py-20 px-4 md:px-6 flex justify-center items-center relative overflow-hidden">
+      {/* Sticky Step Navigation */}
+      <StepNavigation 
+        activeStep={activeStep}
+        onStepClick={handleStepClick}
+        hasData={!!data}
+        isProcessing={isProcessing}
+      />
+
+      {/* Hero Input Section - Step 1 */}
+      <section 
+        ref={inputSectionRef}
+        id="input-section"
+        className="bg-[#1A2633] py-12 md:py-20 px-4 md:px-6 flex justify-center items-center relative overflow-hidden"
+      >
         <div className="absolute inset-0 opacity-[0.03] pointer-events-none">
            <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
              <defs>
@@ -216,6 +395,7 @@ const exportAsImage = async (format: 'png' | 'jpeg' | 'svg') => {
           <textarea 
             value={inputText}
             onChange={(e) => setInputText(e.target.value)}
+            onFocus={() => setActiveStep('input')}
             placeholder="What process shall we visualize with clarity and purpose today?"
             className="w-full h-32 md:h-44 p-6 bg-[#EEEDE9]/30 text-[#1A2633] focus:bg-white focus:ring-4 focus:ring-[#034F80]/5 border border-transparent focus:border-[#034F80]/20 outline-none transition-all resize-none text-lg placeholder:text-[#818181]/50 font-body mb-6"
           />
@@ -231,11 +411,15 @@ const exportAsImage = async (format: 'png' | 'jpeg' | 'svg') => {
         </div>
       </section>
 
-      {/* Main Workspace */}
-      <div className="flex-1 flex flex-col lg:flex-row w-full mx-auto w-full p-4 md:p-12 gap-8 md:gap-16 bg-gray-300">
+      {/* Main Workspace - Steps 2 & 3 */}
+      <div 
+        ref={infographicSectionRef}
+        id="infographic-section"
+        className="flex-1 flex flex-col lg:flex-row w-full mx-auto w-full p-4 md:p-12 gap-8 md:gap-16 bg-gray-300"
+      >
         {/* Sidebar Configuration */}
         <aside className="w-full lg:w-[380px] shrink-0 flex flex-col gap-10">
-          {/* Structure Section with Increased Font Sizes */}
+          {/* Structure Section */}
           <section className="flex flex-col gap-6">
             <h3 className="font-bold text-[#1A2633] flex items-center gap-3 text-[25px] md:text-lg uppercase tracking-widest font-heading border-b border-[#2E3B4A]/10 pb-4">
               <Layout size={20} style={{ color: NOVA_VIA_BRAND.primary }} />
@@ -263,7 +447,7 @@ const exportAsImage = async (format: 'png' | 'jpeg' | 'svg') => {
             </div>
           </section>
 
-          {/* Aesthetic Values Section with Increased Font Sizes */}
+          {/* Aesthetic Values Section */}
           <section className="flex flex-col gap-8">
             <h3 className="font-bold text-[#1A2633] flex items-center gap-3 text-[25px] md:text-lg uppercase tracking-widest font-heading border-b border-[#2E3B4A]/10 pb-4">
               <Palette size={20} style={{ color: NOVA_VIA_BRAND.accent }} />
@@ -328,10 +512,12 @@ const exportAsImage = async (format: 'png' | 'jpeg' | 'svg') => {
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8 gap-4 sm:gap-0">
             <h3 className="font-bold text-[#1A2633] flex items-center gap-3 uppercase tracking-[0.4em] text-[19px] font-heading">
               <div className="w-1.5 h-1.5 rounded-full bg-[#8F9185] animate-pulse" />
-                
             </h3>
             {data && (
-              <div className="flex flex-wrap items-center gap-3 w-full sm:w-auto">
+              <div 
+                id="export-section"
+                className="flex flex-wrap items-center gap-3 w-full sm:w-auto"
+              >
                 <div className="flex bg-white shadow-sm border border-[#2E3B4A]/10 p-1">
                   <button 
                     onClick={() => exportAsImage('png')}
@@ -352,12 +538,6 @@ const exportAsImage = async (format: 'png' | 'jpeg' | 'svg') => {
                     SVG
                   </button>
                 </div>
-                {/* <button 
-                  onClick={handleCopySvg}
-                  className="px-6 py-3 bg-[#1A2633] text-[15px] font-bold text-white hover:bg-[#034F80] transition-all shadow-xl uppercase tracking-widest font-heading"
-                >
-                  <Copy size={16} className="inline mr-2" /> {showCopySuccess ? 'COPIED!' : 'COPY SVG'}
-                </button> */}
               </div>
             )}
           </div>
