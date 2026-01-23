@@ -57,8 +57,8 @@ const ErrorToast: React.FC<{ message: string; onDismiss: () => void }> = ({ mess
   </motion.div>
 );
 
-// Sticky Step Navigation Component
-const StepNavigation: React.FC<{
+// Inline Step Navigation (inside header)
+const StepNavigationInline: React.FC<{
   activeStep: StepId;
   onStepClick: (stepId: StepId) => void;
   hasData: boolean;
@@ -82,65 +82,55 @@ const StepNavigation: React.FC<{
   };
 
   return (
-    <div className="sticky top-20 z-40 bg-white/95 backdrop-blur-md border-b border-[#2E3B4A]/10 shadow-sm">
-      <div className="max-w-4xl mx-auto px-4 md:px-6">
-        <div className="flex items-center justify-center gap-2 md:gap-4 py-3 md:py-4">
-          {STEPS.map((step, index) => {
-            const status = getStepStatus(step);
-            const clickable = isStepClickable(step.id);
+    <div className="flex items-center gap-1 md:gap-3">
+      {STEPS.map((step, index) => {
+        const status = getStepStatus(step);
+        const clickable = isStepClickable(step.id);
+        
+        return (
+          <React.Fragment key={step.id}>
+            <button
+              onClick={() => clickable && onStepClick(step.id)}
+              disabled={!clickable}
+              className={`
+                flex items-center gap-1.5 md:gap-2 px-2 md:px-4 py-1.5 md:py-2 rounded-full transition-all duration-300
+                ${status === 'active' 
+                  ? 'bg-[#034F80] text-white shadow-md' 
+                  : status === 'completed'
+                    ? 'bg-[#8F9185]/20 text-[#034F80] hover:bg-[#8F9185]/30'
+                    : 'bg-[#EEEDE9] text-[#818181]'
+                }
+                ${clickable ? 'cursor-pointer hover:shadow-md' : 'cursor-not-allowed opacity-50'}
+              `}
+            >
+              <span className={`
+                w-5 h-5 md:w-6 md:h-6 rounded-full flex items-center justify-center text-[10px] md:text-xs font-bold
+                ${status === 'active' 
+                  ? 'bg-white/20' 
+                  : status === 'completed'
+                    ? 'bg-[#034F80] text-white'
+                    : 'bg-[#818181]/20'
+                }
+              `}>
+                {status === 'completed' ? '✓' : step.number}
+              </span>
+              <span className="hidden md:block text-[11px] md:text-xs font-bold uppercase tracking-wide">
+                {step.label}
+              </span>
+            </button>
             
-            return (
-              <React.Fragment key={step.id}>
-                <button
-                  onClick={() => clickable && onStepClick(step.id)}
-                  disabled={!clickable}
-                  className={`
-                    flex items-center gap-2 md:gap-3 px-3 md:px-5 py-2 md:py-2.5 rounded-full transition-all duration-300
-                    ${status === 'active' 
-                      ? 'bg-[#034F80] text-white shadow-lg scale-105' 
-                      : status === 'completed'
-                        ? 'bg-[#8F9185]/20 text-[#034F80] hover:bg-[#8F9185]/30'
-                        : 'bg-[#EEEDE9] text-[#818181]'
-                    }
-                    ${clickable ? 'cursor-pointer hover:shadow-md' : 'cursor-not-allowed opacity-50'}
-                  `}
-                >
-                  <span className={`
-                    w-6 h-6 md:w-7 md:h-7 rounded-full flex items-center justify-center text-xs font-bold
-                    ${status === 'active' 
-                      ? 'bg-white/20' 
-                      : status === 'completed'
-                        ? 'bg-[#034F80] text-white'
-                        : 'bg-[#818181]/20'
-                    }
-                  `}>
-                    {status === 'completed' ? '✓' : step.number}
-                  </span>
-                  <span className="hidden sm:flex items-center gap-2">
-                    {step.icon}
-                    <span className="text-xs md:text-sm font-bold uppercase tracking-wider">
-                      {step.label}
-                    </span>
-                  </span>
-                  <span className="sm:hidden text-xs font-bold uppercase">
-                    {step.label}
-                  </span>
-                </button>
-                
-                {index < STEPS.length - 1 && (
-                  <div className={`
-                    w-8 md:w-12 h-0.5 rounded-full transition-colors duration-300
-                    ${status === 'completed' || (status === 'active' && index === 0) 
-                      ? 'bg-[#034F80]' 
-                      : 'bg-[#EEEDE9]'
-                    }
-                  `} />
-                )}
-              </React.Fragment>
-            );
-          })}
-        </div>
-      </div>
+            {index < STEPS.length - 1 && (
+              <div className={`
+                w-4 md:w-8 h-0.5 rounded-full transition-colors duration-300
+                ${status === 'completed' || (status === 'active' && index === 0) 
+                  ? 'bg-[#034F80]' 
+                  : 'bg-[#EEEDE9]'
+                }
+              `} />
+            )}
+          </React.Fragment>
+        );
+      })}
     </div>
   );
 };
@@ -168,7 +158,7 @@ const App: React.FC = () => {
 
   // Scroll to section helper
   const scrollToSection = useCallback((stepId: StepId) => {
-    const offsets = { input: 100, infographic: 140, export: 140 };
+    const offsets = { input: 100, infographic: 100, export: 100 };
     let targetRef: React.RefObject<HTMLElement | HTMLDivElement | null>;
     
     switch (stepId) {
@@ -338,26 +328,30 @@ const App: React.FC = () => {
         {error && <ErrorToast message={error} onDismiss={() => setError(null)} />}
       </AnimatePresence>
 
-      {/* Navbar */}
-      <nav className="h-20 border-b border-[#2E3B4A]/10 bg-white flex items-center justify-between px-6 md:px-10 sticky top-0 z-50">
-        <div className="flex items-center gap-3 md:gap-4">
-          <div className="w-12 h-12 md:w-20 md:h-20 flex items-center justify-center shadow-sm">
+      {/* Navbar with Step Navigation */}
+      <nav className="h-20 border-b border-[#2E3B4A]/10 bg-white flex items-center justify-between px-4 md:px-10 sticky top-0 z-50">
+        <div className="flex items-center gap-2 md:gap-4 shrink-0">
+          <div className="w-10 h-10 md:w-16 md:h-16 flex items-center justify-center shadow-sm">
             <img src="/novavia-logo.png" alt="NOVA ViA Logo" />
           </div>
-          <div>
-            <h1 className="text-xl md:text-2xl font-black tracking-tighter font-heading" style={{ color: NOVA_VIA_BRAND.primary }}>NOVA ViA</h1>
-            <p className="hidden md:block text-[9px] uppercase tracking-[0.4em] text-[#818181] font-black -mt-1 font-body">Design Intelligence</p>
+          <div className="hidden sm:block">
+            <h1 className="text-lg md:text-xl font-black tracking-tighter font-heading" style={{ color: NOVA_VIA_BRAND.primary }}>NOVA ViA</h1>
+            <p className="hidden md:block text-[8px] uppercase tracking-[0.3em] text-[#818181] font-black -mt-1 font-body">Design Intelligence</p>
           </div>
         </div>
+        
+        {/* Centered Step Navigation */}
+        <div className="flex-1 flex justify-center">
+          <StepNavigationInline 
+            activeStep={activeStep}
+            onStepClick={handleStepClick}
+            hasData={!!data}
+            isProcessing={isProcessing}
+          />
+        </div>
+        
+        <div className="w-10 md:w-16 shrink-0" /> {/* Spacer for balance */}
       </nav>
-
-      {/* Sticky Step Navigation */}
-      <StepNavigation 
-        activeStep={activeStep}
-        onStepClick={handleStepClick}
-        hasData={!!data}
-        isProcessing={isProcessing}
-      />
 
       {/* Hero Input Section - Step 1 */}
       <section 
