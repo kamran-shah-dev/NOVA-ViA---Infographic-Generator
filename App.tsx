@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useRef, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, alpha } from 'framer-motion';
 import * as htmlToImage from 'html-to-image';
 import { 
   PlusCircle, 
