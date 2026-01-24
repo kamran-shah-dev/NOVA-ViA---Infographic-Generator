@@ -118,75 +118,75 @@ const InfographicRenderer: React.FC<Props> = ({ data, layout, styles }) => {
     );
   };
 
-  const renderRadial = () => {
-    const svgSize = Math.min(window.innerWidth - 100, 900);
-    const centerX = svgSize / 2;
-    const centerY = svgSize / 2;
-    const radius = svgSize * 0.32;
-    const stepCount = steps.length;
+  // const renderRadial = () => {
+  //   const svgSize = Math.min(window.innerWidth - 100, 900);
+  //   const centerX = svgSize / 2;
+  //   const centerY = svgSize / 2;
+  //   const radius = svgSize * 0.32;
+  //   const stepCount = steps.length;
 
-    return (
-      <div className="flex flex-col items-center justify-center p-12 md:p-24 shadow-2xl border border-white inline-block" style={{ borderRadius: getRadius(), backgroundColor: bg }}>
-        <header className="mb-10 text-center max-w-3xl">
-          <h2 className="text-3xl md:text-5xl font-normal font-elegant" style={{ color: titleColor }}>{title}</h2>
-          {subtitle && <p className="text-[#818181] mt-4 text-lg md:text-xl font-body italic">{subtitle}</p>}
-        </header>
-        <div className="relative" style={{ width: svgSize, height: svgSize }}>
-           <motion.div 
-             initial={{ scale: 0, rotate: -45 }}
-             animate={{ scale: 1, rotate: 0 }}
-             transition={{ duration: 1, ease: "circOut" }}
-             className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 w-48 h-48 md:w-80 md:h-80 border-4 border-[#EEEDE9] bg-white shadow-2xl flex flex-col items-center justify-center p-8 text-center z-20"
-             style={{ borderRadius: getRadius() }}
-           >
-             <IconRenderer name="Sparkles" size={48} className="md:w-16 md:h-16 mb-4" style={{ color: NOVA_VIA_BRAND.primary }} />
-             <p className="text-[10px] md:text-xs font-bold uppercase tracking-[0.4em] text-[#818181] font-heading mb-2">Transformation Hub</p>
-             <p className="text-xl md:text-3xl font-bold font-heading uppercase tracking-tighter" style={{ color: NOVA_VIA_BRAND.primary }}>{title.split(' ')[0]}</p>
-           </motion.div>
+  //   return (
+  //     <div className="flex flex-col items-center justify-center p-12 md:p-24 shadow-2xl border border-white inline-block" style={{ borderRadius: getRadius(), backgroundColor: bg }}>
+  //       <header className="mb-10 text-center max-w-3xl">
+  //         <h2 className="text-3xl md:text-5xl font-normal font-elegant" style={{ color: titleColor }}>{title}</h2>
+  //         {subtitle && <p className="text-[#818181] mt-4 text-lg md:text-xl font-body italic">{subtitle}</p>}
+  //       </header>
+  //       <div className="relative" style={{ width: svgSize, height: svgSize }}>
+  //          <motion.div 
+  //            initial={{ scale: 0, rotate: -45 }}
+  //            animate={{ scale: 1, rotate: 0 }}
+  //            transition={{ duration: 1, ease: "circOut" }}
+  //            className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 w-48 h-48 md:w-80 md:h-80 border-4 border-[#EEEDE9] bg-white shadow-2xl flex flex-col items-center justify-center p-8 text-center z-20"
+  //            style={{ borderRadius: getRadius() }}
+  //          >
+  //            <IconRenderer name="Sparkles" size={48} className="md:w-16 md:h-16 mb-4" style={{ color: NOVA_VIA_BRAND.primary }} />
+  //            <p className="text-[10px] md:text-xs font-bold uppercase tracking-[0.4em] text-[#818181] font-heading mb-2">Transformation Hub</p>
+  //            <p className="text-xl md:text-3xl font-bold font-heading uppercase tracking-tighter" style={{ color: NOVA_VIA_BRAND.primary }}>{title.split(' ')[0]}</p>
+  //          </motion.div>
 
-           <svg className="absolute inset-0 w-full h-full pointer-events-none overflow-visible">
-             {steps.map((_, idx) => {
-               const angle = (idx / stepCount) * 2 * Math.PI - Math.PI / 2;
-               const x = centerX + radius * Math.cos(angle);
-               const y = centerY + radius * Math.sin(angle);
-               return (
-                 <line 
-                   key={`line-${idx}`}
-                   x1={centerX} y1={centerY} x2={x} y2={y}
-                   stroke={NOVA_VIA_BRAND.primary} strokeOpacity="0.08" strokeWidth="2" 
-                   strokeDasharray={styles.borderVariant === 'dashed' ? '12,12' : 'none'}
-                 />
-               );
-             })}
-           </svg>
+  //          <svg className="absolute inset-0 w-full h-full pointer-events-none overflow-visible">
+  //            {steps.map((_, idx) => {
+  //              const angle = (idx / stepCount) * 2 * Math.PI - Math.PI / 2;
+  //              const x = centerX + radius * Math.cos(angle);
+  //              const y = centerY + radius * Math.sin(angle);
+  //              return (
+  //                <line 
+  //                  key={`line-${idx}`}
+  //                  x1={centerX} y1={centerY} x2={x} y2={y}
+  //                  stroke={NOVA_VIA_BRAND.primary} strokeOpacity="0.08" strokeWidth="2" 
+  //                  strokeDasharray={styles.borderVariant === 'dashed' ? '12,12' : 'none'}
+  //                />
+  //              );
+  //            })}
+  //          </svg>
 
-           {steps.map((step, idx) => {
-             const angle = (idx / stepCount) * 2 * Math.PI - Math.PI / 2;
-             const x = centerX + radius * Math.cos(angle);
-             const y = centerY + radius * Math.sin(angle);
+  //          {steps.map((step, idx) => {
+  //            const angle = (idx / stepCount) * 2 * Math.PI - Math.PI / 2;
+  //            const x = centerX + radius * Math.cos(angle);
+  //            const y = centerY + radius * Math.sin(angle);
              
-             return (
-               <motion.div 
-                 key={step.id}
-                 initial={{ opacity: 0, scale: 0.5 }}
-                 animate={{ opacity: 1, scale: 1 }}
-                 transition={{ delay: idx * 0.1, duration: 0.8 }}
-                 className="absolute w-40 md:w-64 transform -translate-x-1/2 -translate-y-1/2 bg-white p-6 md:p-8 shadow-2xl text-center group"
-                 style={{ left: x, top: y, borderRadius: getRadius(), border: getBorderStyle() }}
-               >
-                 <div className="w-10 h-10 md:w-12 md:h-12 flex items-center justify-center text-white text-sm md:text-lg font-bold font-heading mx-auto mb-4 shadow-xl group-hover:scale-110 transition-transform"
-                      style={{ backgroundColor: NOVA_VIA_BRAND.primary }}>
-                   {step.number}
-                 </div>
-                 <h4 className="text-sm md:text-xl font-bold mb-3 font-heading uppercase tracking-tight" style={{ color: NOVA_VIA_BRAND.text }}>{step.title}</h4>
-                 <p className="text-[10px] md:text-sm text-[#2E3B4A] leading-relaxed font-body opacity-70 line-clamp-3">{step.description}</p>
-               </motion.div>
-             );
-           })}
-        </div>
-      </div>
-    );
-  };
+  //            return (
+  //              <motion.div 
+  //                key={step.id}
+  //                initial={{ opacity: 0, scale: 0.5 }}
+  //                animate={{ opacity: 1, scale: 1 }}
+  //                transition={{ delay: idx * 0.1, duration: 0.8 }}
+  //                className="absolute w-40 md:w-64 transform -translate-x-1/2 -translate-y-1/2 bg-white p-6 md:p-8 shadow-2xl text-center group"
+  //                style={{ left: x, top: y, borderRadius: getRadius(), border: getBorderStyle() }}
+  //              >
+  //                <div className="w-10 h-10 md:w-12 md:h-12 flex items-center justify-center text-white text-sm md:text-lg font-bold font-heading mx-auto mb-4 shadow-xl group-hover:scale-110 transition-transform"
+  //                     style={{ backgroundColor: NOVA_VIA_BRAND.primary }}>
+  //                  {step.number}
+  //                </div>
+  //                <h4 className="text-sm md:text-xl font-bold mb-3 font-heading uppercase tracking-tight" style={{ color: NOVA_VIA_BRAND.text }}>{step.title}</h4>
+  //                <p className="text-[10px] md:text-sm text-[#2E3B4A] leading-relaxed font-body opacity-70 line-clamp-3">{step.description}</p>
+  //              </motion.div>
+  //            );
+  //          })}
+  //       </div>
+  //     </div>
+  //   );
+  // };
 
   const renderTimeline = () => {
     return (
@@ -234,76 +234,76 @@ const InfographicRenderer: React.FC<Props> = ({ data, layout, styles }) => {
     );
   };
 
-  const renderCircularProgress = () => {
-    const svgSize = Math.min(window.innerWidth - 80, 1000);
-    const centerX = svgSize / 2;
-    const centerY = svgSize / 2;
-    const radius = svgSize * 0.35;
-    const stepCount = steps.length;
+  // const renderCircularProgress = () => {
+  //   const svgSize = Math.min(window.innerWidth - 80, 1000);
+  //   const centerX = svgSize / 2;
+  //   const centerY = svgSize / 2;
+  //   const radius = svgSize * 0.35;
+  //   const stepCount = steps.length;
 
-    return (
-      <div className="flex flex-col items-center justify-center p-12 md:p-24 shadow-2xl border border-white inline-block" style={{ borderRadius: getRadius(), backgroundColor: bg }}>
-        <header className="mb-16 text-center max-w-4xl">
-          <h2 className="text-4xl md:text-6xl font-normal font-elegant tracking-tight" style={{ color: titleColor }}>{title}</h2>
-          {subtitle && <p className="text-[#818181] mt-6 text-xl font-body italic font-medium">{subtitle}</p>}
-        </header>
+  //   return (
+  //     <div className="flex flex-col items-center justify-center p-12 md:p-24 shadow-2xl border border-white inline-block" style={{ borderRadius: getRadius(), backgroundColor: bg }}>
+  //       <header className="mb-16 text-center max-w-4xl">
+  //         <h2 className="text-4xl md:text-6xl font-normal font-elegant tracking-tight" style={{ color: titleColor }}>{title}</h2>
+  //         {subtitle && <p className="text-[#818181] mt-6 text-xl font-body italic font-medium">{subtitle}</p>}
+  //       </header>
         
-        <div className="relative flex items-center justify-center" style={{ width: svgSize, height: svgSize }}>
-           <svg className="absolute inset-0 w-full h-full pointer-events-none overflow-visible">
-             <circle 
-               cx={centerX} cy={centerY} r={radius} 
-               fill="none" stroke="#2E3B4A08" strokeWidth="12"
-             />
-             <path 
-               d={`M ${centerX} ${centerY - radius} A ${radius} ${radius} 0 1 1 ${centerX} ${centerY + radius} A ${radius} ${radius} 0 1 1 ${centerX} ${centerY - radius}`}
-               fill="none"
-               stroke={NOVA_VIA_BRAND.primary}
-               strokeWidth="4"
-               strokeLinecap="square"
-               strokeDasharray="20, 20" 
-             />
-           </svg>
+  //       <div className="relative flex items-center justify-center" style={{ width: svgSize, height: svgSize }}>
+  //          <svg className="absolute inset-0 w-full h-full pointer-events-none overflow-visible">
+  //            <circle 
+  //              cx={centerX} cy={centerY} r={radius} 
+  //              fill="none" stroke="#2E3B4A08" strokeWidth="12"
+  //            />
+  //            <path 
+  //              d={`M ${centerX} ${centerY - radius} A ${radius} ${radius} 0 1 1 ${centerX} ${centerY + radius} A ${radius} ${radius} 0 1 1 ${centerX} ${centerY - radius}`}
+  //              fill="none"
+  //              stroke={NOVA_VIA_BRAND.primary}
+  //              strokeWidth="4"
+  //              strokeLinecap="square"
+  //              strokeDasharray="20, 20" 
+  //            />
+  //          </svg>
 
-           {steps.map((step, idx) => {
-             const angle = (idx / stepCount) * 2 * Math.PI - Math.PI / 2;
-             const x = centerX + radius * Math.cos(angle);
-             const y = centerY + radius * Math.sin(angle);
+  //          {steps.map((step, idx) => {
+  //            const angle = (idx / stepCount) * 2 * Math.PI - Math.PI / 2;
+  //            const x = centerX + radius * Math.cos(angle);
+  //            const y = centerY + radius * Math.sin(angle);
              
-             return (
-               <motion.div 
-                 key={step.id}
-                 initial={{ opacity: 0, scale: 0.8 }}
-                 animate={{ opacity: 1, scale: 1 }}
-                 transition={{ delay: idx * 0.1, duration: 1, ease: [0.16, 1, 0.3, 1] }}
-                 className="absolute transform -translate-x-1/2 -translate-y-1/2 flex flex-col items-center group z-30"
-                 style={{ left: x, top: y }}
-               >
-                 <div className="w-14 h-14 md:w-20 md:h-20 flex items-center justify-center text-white border-[6px] md:border-[12px] border-white shadow-2xl transition-all duration-500 group-hover:scale-110 group-hover:-translate-y-2"
-                      style={{ backgroundColor: idx % 2 === 0 ? NOVA_VIA_BRAND.primary : accent }}>
-                    <IconRenderer name={step.iconName} size={28} className="md:w-10 md:h-10" />
-                 </div>
+  //            return (
+  //              <motion.div 
+  //                key={step.id}
+  //                initial={{ opacity: 0, scale: 0.8 }}
+  //                animate={{ opacity: 1, scale: 1 }}
+  //                transition={{ delay: idx * 0.1, duration: 1, ease: [0.16, 1, 0.3, 1] }}
+  //                className="absolute transform -translate-x-1/2 -translate-y-1/2 flex flex-col items-center group z-30"
+  //                style={{ left: x, top: y }}
+  //              >
+  //                <div className="w-14 h-14 md:w-20 md:h-20 flex items-center justify-center text-white border-[6px] md:border-[12px] border-white shadow-2xl transition-all duration-500 group-hover:scale-110 group-hover:-translate-y-2"
+  //                     style={{ backgroundColor: idx % 2 === 0 ? NOVA_VIA_BRAND.primary : accent }}>
+  //                   <IconRenderer name={step.iconName} size={28} className="md:w-10 md:h-10" />
+  //                </div>
 
-                 <div className="mt-4 mb-2 px-4 py-1 border border-[#2E3B4A10] bg-white/95 backdrop-blur-md text-[9px] md:text-[11px] font-bold tracking-[0.3em] text-[#818181] uppercase shadow-sm font-heading">
-                   Stage {step.number}
-                 </div>
+  //                <div className="mt-4 mb-2 px-4 py-1 border border-[#2E3B4A10] bg-white/95 backdrop-blur-md text-[9px] md:text-[11px] font-bold tracking-[0.3em] text-[#818181] uppercase shadow-sm font-heading">
+  //                  Stage {step.number}
+  //                </div>
 
-                 <div className="bg-white px-8 py-6 shadow-2xl text-center min-w-[180px] md:min-w-[280px] transition-all duration-500 group-hover:shadow-[0_40px_60px_-15px_rgba(26,38,51,0.15)] border-b-4" 
-                      style={{ borderRadius: getRadius(), borderBottomColor: idx % 2 === 0 ? NOVA_VIA_BRAND.primary : accent }}>
-                    <h4 className="text-sm md:text-xl font-bold tracking-tight leading-tight font-heading uppercase" style={{ color: NOVA_VIA_BRAND.text }}>
-                      {step.title}
-                    </h4>
-                 </div>
-               </motion.div>
-             );
-           })}
+  //                <div className="bg-white px-8 py-6 shadow-2xl text-center min-w-[180px] md:min-w-[280px] transition-all duration-500 group-hover:shadow-[0_40px_60px_-15px_rgba(26,38,51,0.15)] border-b-4" 
+  //                     style={{ borderRadius: getRadius(), borderBottomColor: idx % 2 === 0 ? NOVA_VIA_BRAND.primary : accent }}>
+  //                   <h4 className="text-sm md:text-xl font-bold tracking-tight leading-tight font-heading uppercase" style={{ color: NOVA_VIA_BRAND.text }}>
+  //                     {step.title}
+  //                   </h4>
+  //                </div>
+  //              </motion.div>
+  //            );
+  //          })}
            
-           <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 w-48 h-48 md:w-64 md:h-64 pointer-events-none opacity-[0.05] flex items-center justify-center">
-             <LucideIcons.Sparkles size={svgSize * 0.25} style={{ color: NOVA_VIA_BRAND.primary }} />
-           </div>
-        </div>
-      </div>
-    );
-  };
+  //          <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 w-48 h-48 md:w-64 md:h-64 pointer-events-none opacity-[0.05] flex items-center justify-center">
+  //            <LucideIcons.Sparkles size={svgSize * 0.25} style={{ color: NOVA_VIA_BRAND.primary }} />
+  //          </div>
+  //       </div>
+  //     </div>
+  //   );
+  // };
 
   const renderMultiColumn = () => {
     return (
@@ -348,9 +348,9 @@ const InfographicRenderer: React.FC<Props> = ({ data, layout, styles }) => {
 
   switch (layout) {
     case 'horizontal-steps': return renderHorizontal();
-    case 'radial-process': return renderRadial();
+    // case 'radial-process': return renderRadial();
     case 'timeline-flow': return renderTimeline();
-    case 'circular-progress': return renderCircularProgress();
+    // case 'circular-progress': return renderCircularProgress();
     case 'multi-column': return renderMultiColumn();
     case 'vertical-cards':
     default: return renderVertical();
