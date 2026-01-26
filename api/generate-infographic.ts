@@ -28,7 +28,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const ai = new GoogleGenAI({ apiKey });
 
     const response = await ai.models.generateContent({
-      model: 'gemini-2.0-flash',
+      model: 'gemini-3.0-flash',
       contents: `Parse the following text into a structured infographic format with a title and a sequence of steps. If no title is found, provide a suitable professional one based on the context. Assign a logical icon name (using Lucide icons, e.g., 'Activity', 'Check', 'Target', 'Layers', 'Users', 'Settings', 'Zap', 'Shield') to each step. 
       
       Input Text:
