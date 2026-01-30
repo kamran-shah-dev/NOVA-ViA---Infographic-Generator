@@ -158,31 +158,27 @@ const InfographicRenderer: React.FC<Props> = ({ data, layout, styles }) => {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: idx * 0.1, duration: 0.8 }}
-              className="w-full md:w-[320px] lg:w-[360px] flex flex-col p-10 relative group hover:scale-105 hover:shadow-2xl transition-all duration-300 overflow-hidden"
+              className="w-full md:w-[320px] lg:w-[360px] flex flex-col p-10 relative group"
               style={commonCardStyles(idx)}
             >
               {/* Gradient accent at top */}
               <div className="absolute top-0 left-0 right-0 h-1 opacity-60"
                    style={{ background: `linear-gradient(90deg, ${idx % 2 === 0 ? NOVA_VIA_BRAND.primary : accent}, transparent)` }} />
 
-              <div className="absolute -top-6 left-10 w-12 h-12 md:w-14 md:h-14 flex items-center justify-center text-white font-bold text-lg md:text-xl font-heading shadow-2xl group-hover:scale-110 transition-transform duration-300 relative overflow-hidden"
+              <div className="absolute -top-6 left-10 w-12 h-12 md:w-14 md:h-14 flex items-center justify-center text-white font-bold text-lg md:text-xl font-heading shadow-2xl relative overflow-hidden"
                    style={{ backgroundColor: NOVA_VIA_BRAND.primary, borderRadius: getRadius() }}>
                 <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent" />
                 {step.number}
               </div>
-              <div className="mt-8 mb-8 p-5 rounded-lg inline-flex self-start transition-all duration-300 shadow-sm"
+              <div className="mt-8 mb-8 p-5 rounded-lg inline-flex self-start shadow-sm"
                    style={{ backgroundColor: isAccentDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)' }}>
                 <IconRenderer name={step.iconName} size={48} style={{ color: isAccentDark ? '#ffffff' : NOVA_VIA_BRAND.primary }} />
               </div>
               <h3 className="text-2xl font-bold mb-6 leading-tight font-heading uppercase tracking-tight" style={{ color: cardTitleColor }}>{step.title}</h3>
               <p className="text-sm md:text-base leading-relaxed font-body opacity-80 flex-1" style={{ color: cardDescriptionColor }}>{step.description}</p>
 
-              {/* Bottom gradient accent */}
-              <div className="absolute bottom-0 left-0 right-0 h-2 opacity-0 group-hover:opacity-60 transition-opacity duration-300"
-                   style={{ background: `linear-gradient(90deg, transparent, ${idx % 2 === 0 ? NOVA_VIA_BRAND.primary : accent}, transparent)` }} />
-
               {idx < steps.length - 1 && (
-                <div className="hidden md:flex absolute top-1/2 -right-5 transform -translate-y-1/2 z-20 p-3 shadow-xl rounded-full transition-all duration-300 group-hover:scale-110"
+                <div className="hidden md:flex absolute top-1/2 -right-5 transform -translate-y-1/2 z-50 p-3 shadow-xl rounded-full"
                      style={{ backgroundColor: getCardBackground(), border: `2px solid ${isAccentDark ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.2)'}` }}>
                    <LucideIcons.ChevronRight style={{ color: isAccentDark ? '#ffffff' : '#2E3B4A' }} size={24} />
                 </div>
