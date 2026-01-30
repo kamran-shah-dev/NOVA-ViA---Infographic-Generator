@@ -182,9 +182,9 @@ const InfographicRenderer: React.FC<Props> = ({ data, layout, styles }) => {
                    style={{ background: `linear-gradient(90deg, transparent, ${idx % 2 === 0 ? NOVA_VIA_BRAND.primary : accent}, transparent)` }} />
 
               {idx < steps.length - 1 && (
-                <div className="hidden md:flex absolute top-1/2 -right-3 transform -translate-y-1/2 z-20 p-3 shadow-xl rounded-full transition-all duration-300 group-hover:scale-110"
+                <div className="hidden md:flex absolute top-1/2 -right-5 transform -translate-y-1/2 z-20 p-3 shadow-xl rounded-full transition-all duration-300 group-hover:scale-110"
                      style={{ backgroundColor: getCardBackground(), border: `2px solid ${borderColor}` }}>
-                   <LucideIcons.ChevronRight style={{ color: isDarkBackground ? '#ffffff' : NOVA_VIA_BRAND.primary }} size={24} />
+                   <LucideIcons.ChevronRight style={{ color: isDarkBackground ? '#ffffff' : '#2E3B4A' }} size={24} />
                 </div>
               )}
             </motion.div>

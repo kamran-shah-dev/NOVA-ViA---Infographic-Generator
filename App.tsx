@@ -543,7 +543,7 @@ const App: React.FC = () => {
         ref={infographicSectionRef}
         id="infographic-section"
         className={`flex-1 flex flex-col lg:flex-row w-full mx-auto p-4 md:p-12 gap-8 md:gap-16 transition-colors duration-300 ${
-          darkMode ? 'bg-[#0F1419]' : 'bg-[#f5f5f5]'
+          darkMode ? 'bg-[#0F1419]' : 'bg-[#B6C2C0]'
         }`}
       >
         {/* Sidebar Configuration */}
