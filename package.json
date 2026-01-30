@@ -11,6 +11,8 @@
   },
   "dependencies": {
     "@google/genai": "^1.37.0",
+    "@tsparticles/react": "^3.0.0",
+    "@tsparticles/slim": "^3.9.1",
     "cors": "^2.8.6",
     "dotenv": "^17.2.3",
     "express": "^5.2.1",

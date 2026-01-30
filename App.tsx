@@ -1,12 +1,15 @@
 import React, { useState, useCallback, useRef, useEffect } from 'react';
-import { motion, AnimatePresence, alpha } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import * as htmlToImage from 'html-to-image';
-import { 
-  PlusCircle, 
-  Layout, 
-  Sparkles, 
-  ArrowRight, 
-  Copy, 
+import Particles, { initParticlesEngine } from "@tsparticles/react";
+import { loadSlim } from "@tsparticles/slim";
+import type { Engine } from "@tsparticles/engine";
+import {
+  PlusCircle,
+  Layout,
+  Sparkles,
+  ArrowRight,
+  Copy,
   RefreshCw,
   Info,
   Palette,
@@ -143,18 +146,28 @@ const App: React.FC = () => {
   const [selectedLayout, setSelectedLayout] = useState<LayoutType>('vertical-cards');
   const [showCopySuccess, setShowCopySuccess] = useState(false);
   const [activeStep, setActiveStep] = useState<StepId>('input');
-  
+  const [particlesInit, setParticlesInit] = useState(false);
+
   // Section refs for scrolling
   const inputSectionRef = useRef<HTMLElement>(null);
   const infographicSectionRef = useRef<HTMLDivElement>(null);
   const exportRef = useRef<HTMLDivElement>(null);
-  
+
   const [styleOptions, setStyleOptions] = useState<StyleOptions>({
     accentColor: NOVA_VIA_BRAND.accent,
     backgroundColor: BACKGROUND_COLORS[1].value,
     cornerStyle: 'soft',
     borderVariant: 'solid',
   });
+
+  // Initialize particles engine
+  useEffect(() => {
+    initParticlesEngine(async (engine: Engine) => {
+      await loadSlim(engine);
+    }).then(() => {
+      setParticlesInit(true);
+    });
+  }, []);
 
   // Scroll to section helper
   const scrollToSection = useCallback((stepId: StepId) => {
@@ -354,11 +367,86 @@ const App: React.FC = () => {
       </nav>
 
       {/* Hero Input Section - Step 1 */}
-      <section 
+      <section
         ref={inputSectionRef}
         id="input-section"
         className="bg-[#1A2633] py-12 md:py-20 px-4 md:px-6 flex justify-center items-center relative overflow-hidden"
       >
+        {/* Particles Background */}
+        {particlesInit && (
+          <Particles
+            id="tsparticles"
+            options={{
+              background: {
+                color: {
+                  value: "transparent",
+                },
+              },
+              fpsLimit: 120,
+              interactivity: {
+                events: {
+                  onClick: {
+                    enable: true,
+                    mode: "push",
+                  },
+                  onHover: {
+                    enable: true,
+                    mode: "repulse",
+                  },
+                },
+                modes: {
+                  push: {
+                    quantity: 4,
+                  },
+                  repulse: {
+                    distance: 100,
+                    duration: 0.4,
+                  },
+                },
+              },
+              particles: {
+                color: {
+                  value: "#8F9185",
+                },
+                links: {
+                  color: "#8F9185",
+                  distance: 150,
+                  enable: true,
+                  opacity: 0.2,
+                  width: 1,
+                },
+                move: {
+                  direction: "none",
+                  enable: true,
+                  outModes: {
+                    default: "bounce",
+                  },
+                  random: false,
+                  speed: 1,
+                  straight: false,
+                },
+                number: {
+                  density: {
+                    enable: true,
+                  },
+                  value: 80,
+                },
+                opacity: {
+                  value: 0.3,
+                },
+                shape: {
+                  type: "circle",
+                },
+                size: {
+                  value: { min: 1, max: 3 },
+                },
+              },
+              detectRetina: true,
+            }}
+            className="absolute inset-0 pointer-events-none"
+          />
+        )}
+
         <div className="absolute inset-0 opacity-[0.03] pointer-events-none">
            <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
              <defs>
