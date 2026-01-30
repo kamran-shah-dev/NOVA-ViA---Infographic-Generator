@@ -1,28 +1,31 @@
-import express from "express";
-import cors from "cors";
 import { GoogleGenAI, Type } from "@google/genai";
-import dotenv from "dotenv";
-dotenv.config({ path: ".env.local" });
+import type { VercelRequest, VercelResponse } from "@vercel/node";
 
-const app = express();
-app.use(cors());
-app.use(express.json());
+export default async function handler(req: VercelRequest, res: VercelResponse) {
+  // Only allow POST requests
+  if (req.method !== "POST") {
+    return res.status(405).json({ error: "Method not allowed" });
+  }
 
-const ai = new GoogleGenAI({
-  apiKey: process.env.GEMINI_API_KEY,
-});
+  const { text } = req.body;
 
-// Updated to match the serverless function endpoint
-app.post("/api/generate-infographic", async (req, res) => {
+  if (!text || typeof text !== "string" || text.trim().length < 5) {
+    return res.status(400).json({
+      error: "Input text is too short to generate an infographic. Please provide more detail.",
+    });
+  }
+
+  // Initialize Gemini AI with server-side API key
+  const apiKey = process.env.GEMINI_API_KEY;
+
+  if (!apiKey) {
+    console.error("GEMINI_API_KEY is not configured");
+    return res.status(500).json({ error: "Server configuration error" });
+  }
+
+  const ai = new GoogleGenAI({ apiKey });
+
   try {
-    const { text } = req.body;
-
-    if (!text || typeof text !== "string" || text.trim().length < 5) {
-      return res.status(400).json({
-        error: "Input text is too short to generate an infographic. Please provide more detail.",
-      });
-    }
-
     const response = await ai.models.generateContent({
       model: "gemini-3-flash-preview",
       contents: `Parse the following text into a structured infographic format with a title and a sequence of steps. If no title is found, provide a suitable professional one based on the context. Assign a logical icon name (using Lucide icons, e.g., 'Activity', 'Check', 'Target', 'Layers', 'Users', 'Settings', 'Zap', 'Shield') to each step.
@@ -73,19 +76,19 @@ app.post("/api/generate-infographic", async (req, res) => {
       });
     }
 
-    res.json(data);
-  } catch (err: any) {
-    console.error("Gemini error:", err);
-    res.status(500).json({
-      error: "Gemini API failed or is overloaded",
-      details: err.message,
+    return res.status(200).json(data);
+  } catch (error: any) {
+    console.error("Gemini Parsing Error:", error);
+
+    if (error.message?.includes("API_KEY") || error.message?.includes("API key")) {
+      return res.status(500).json({
+        error: "Invalid API key configured. Please check your environment settings.",
+      });
+    }
+
+    return res.status(500).json({
+      error: "Our AI engine encountered an issue processing your request. Please try again or rephrase your input.",
+      code: "PARSING_FAILED",
     });
   }
-});
-
-const PORT = 3001;
-app.listen(PORT, () => {
-  console.log(`🚀 Local dev API server running on http://localhost:${PORT}`);
-  console.log(`📡 API endpoint: http://localhost:${PORT}/api/generate-infographic`);
-});
-
+}
